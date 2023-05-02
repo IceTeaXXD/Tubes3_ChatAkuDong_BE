@@ -10,13 +10,13 @@ type Conversation struct {
 	IDConversation int    `gorm:"primaryKey"`
 	IDUser         int    `gorm:"not null"`
 	Topic          string `gorm:"not null"`
-	Chats          []Chat `gorm:"foreignKey:IDConversation"`
+	Chats          []Chat `gorm:"foreignKey:IDConversation;constraint:OnDelete:CASCADE"`
 }
 
 type Chat struct {
-	IDConversation int    `gorm:"primaryKey"`
-	IDChat         int    `gorm:"primaryKey"`
-	IDUser         int    `gorm:"not null"`	
+	IDChat         int    `gorm:"type:serial;primaryKey;not null"`
+	IDConversation int    `gorm:"not null"`
+	IDUser         int    `gorm:"not null"`
 	Question       string `gorm:"not null"`
 	Answer         string `gorm:"not null"`
 }

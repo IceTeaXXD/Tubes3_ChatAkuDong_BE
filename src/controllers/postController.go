@@ -67,7 +67,6 @@ func PostChat(c *gin.Context) {
 		Question       string
 		Answer         string
 	}
-	c.Bind(&body)
 	idUser, err1 := strconv.Atoi(c.Param("idUser"))
 	if err1 != nil {
 		c.Status(400)
@@ -78,8 +77,9 @@ func PostChat(c *gin.Context) {
 		c.Status(400)
 		return
 	}
+	c.Bind(&body)
 	// create post
-	post := model.Chat{IDChat: body.IDChat, Question: body.Question, Answer: body.Answer, IDUser: idUser, IDConversation: idConv}
+	post := model.Chat{Question: body.Question, Answer: body.Answer, IDUser: idUser, IDConversation: idConv}
 	result := initializers.DB.Create(&post)
 
 	if result.Error != nil {

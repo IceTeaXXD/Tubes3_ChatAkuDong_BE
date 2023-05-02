@@ -21,5 +21,7 @@ func main() {
 	r.GET("/:idUser", controllers.GetConversationFromUser)
 	r.GET("/:idUser/:idConv", controllers.GetChatFromConversation)
 	r.GET("/question", controllers.GetQuestions)
+	r.DELETE("/:idUser/:idConv", controllers.DeleteConversation)
+	r.DELETE("/question/:idQuestion", controllers.DeleteQuestion)
 	r.Run()
 }
