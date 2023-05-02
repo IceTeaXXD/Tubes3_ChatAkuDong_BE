@@ -3,7 +3,7 @@ package main
 import (
 	"cad/controllers"
 	"cad/initializers"
-
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,8 +11,17 @@ func init() {
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDB()
 }
+
 func main() {
 	r := gin.Default()
+
+	// Add CORS middleware
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowMethods: []string{"GET", "POST", "DELETE"},
+		AllowHeaders: []string{"Origin"},
+	}))
+
 	r.POST("/register", controllers.PostUser)
 	r.POST("/:idUser/conversation", controllers.PostConversation)
 	r.POST("/:idUser/:idConv/chat", controllers.PostChat)
