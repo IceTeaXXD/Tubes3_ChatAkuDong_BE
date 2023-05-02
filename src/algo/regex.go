@@ -12,8 +12,23 @@ func Regex(text string) bool{
 	if(return_bool){
 		matches := regex.FindAllString(text, -1)
 		fmt.Println(matches[0]);
-		// d := Day(matches[0]);
-		// fmt.Println(d);
+		d := Day(matches[0]);
+		switch d{
+		case 0:
+			fmt.Println("Hari Minggu")
+		case 1:
+			fmt.Println("Hari Senin")
+		case 2:
+			fmt.Println("Hari Selasa")
+		case 3:
+			fmt.Println("Hari Rabu")
+		case 4:
+			fmt.Println("Hari Kamis")
+		case 5:
+			fmt.Println("Hari Jumat")
+		case 6:
+			fmt.Println("Hari Sabtu")
+		}
 		return return_bool;
 	}
 
