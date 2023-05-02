@@ -1,0 +1,6 @@
+CREATE DATABASE cad;
+
+CREATE TABLE chat(
+    idChat SERIAL PRIMARY KEY,
+    description VARCHAR(255)
+);
