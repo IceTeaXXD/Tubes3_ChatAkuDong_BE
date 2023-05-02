@@ -19,7 +19,7 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"http://localhost:3000"},
 		AllowMethods: []string{"GET", "POST", "DELETE"},
-		AllowHeaders: []string{"Origin"},
+		AllowHeaders: []string{"Origin", "Content-Type"},
 	}))
 
 	r.POST("/register", controllers.PostUser)
