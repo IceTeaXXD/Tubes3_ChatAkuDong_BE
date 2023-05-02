@@ -25,7 +25,12 @@ func Regex(flag int, text string) bool{
 		if(return_bool){
 			matches := regex.FindAllString(text, -1)
 			fmt.Println(matches[0]);
-			fmt.Println(Evaluate(matches[0]));
+			res, err := Calculate(matches[0]);
+			if err != nil {
+				fmt.Println("Error:", err)
+			} else {
+				fmt.Printf("Result: %v\n", res)
+			}
 		}
 		return return_bool;
 	}
