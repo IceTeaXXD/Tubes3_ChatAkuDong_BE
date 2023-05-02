@@ -1,16 +1,25 @@
 package main
 
 import (
-	"fmt"
-	"github.com/IceTeaXXD/Tubes3_13521004/server/algo"
+	"cad/controllers"
+	"cad/initializers"
+
+	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	initializers.LoadEnvVariables()
+	initializers.ConnectToDB()
+}
 func main() {
-	fmt.Println(Algo.KMP("keren", "Siapakah Dosen Terkeren STEI?"))
-	fmt.Println(Algo.BMMatch("keren", "Siapakah Dosen Terkeren STEI?"))
-	fmt.Println(Algo.MatchRatio("Dosen Keren STEI", "Siapakah Dosen Terkeren STEI?"))
-	Algo.Day("01/05/2023")
-	fmt.Println(Algo.Evaluate("5+9*(3*2)/4"))
-	fmt.Println(Algo.Regex(1, "Hari apa tanggal 01/05/2023"));
-	fmt.Println(Algo.Regex(2, "1+1*2"));
+	r := gin.Default()
+	r.POST("/register", controllers.PostUser)
+	r.POST("/:idUser/conversation", controllers.PostConversation)
+	r.POST("/:idUser/:idConv/chat", controllers.PostChat)
+	r.POST("/question", controllers.PostQuestion)
+	r.GET("/login", controllers.GetUsers)
+	r.GET("/:idUser", controllers.GetConversationFromUser)
+	r.GET("/:idUser/:idConv", controllers.GetChatFromConversation)
+	r.GET("/question", controllers.GetQuestions)
+	r.Run()
 }
