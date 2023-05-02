@@ -1,4 +1,4 @@
-module github.com/IceTeaXXD/Tubes3_13521004/server
+module github.com/IceTeaXXD/Tubes3_ChatAkuDong_BE/src
 
 go 1.20
 
