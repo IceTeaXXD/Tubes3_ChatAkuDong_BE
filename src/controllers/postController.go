@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"cad/algo"
 	"cad/initializers"
 	model "cad/models"
 	"strconv"
@@ -79,6 +80,7 @@ func PostChat(c *gin.Context) {
 	}
 	c.Bind(&body)
 	// create post
+	body.Answer = Algo.Regex(body.Question)
 	post := model.Chat{Question: body.Question, Answer: body.Answer, IDUser: idUser, IDConversation: idConv}
 	result := initializers.DB.Create(&post)
 
