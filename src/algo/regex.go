@@ -34,8 +34,8 @@ func Regex(text string) string{
 	}
 
 	/* Periksa apakah ekspresi matematika yang valid terkandung dalam teks*/
-	regex = regexp.MustCompile(`^\s*([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\))\s*(([-+*/]\s*([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\)))+)\s*$`);
-	return_bool, _ = regexp.MatchString(`^\s*([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\))\s*(([-+*/]\s*([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\)))+)\s*$`, text);
+	regex = regexp.MustCompile(`([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\))\s*(([-+*/^]\s*([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\)))+)`);
+	return_bool, _ = regexp.MatchString(`([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\))\s*(([-+*/^]\s*([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\)))+)`, text);
 	if(return_bool){
 		matches := regex.FindAllString(text, -1)
 		res, _ := Calculate(matches[0])
