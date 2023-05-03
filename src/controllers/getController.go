@@ -28,7 +28,7 @@ func GetConversationFromUser(c *gin.Context) {
 }
 
 func GetChatFromConversation(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("idConv")
 
 	var chat []models.Chat
 	initializers.DB.Where("id_conversation = ?", id).Find(&chat)
@@ -37,7 +37,6 @@ func GetChatFromConversation(c *gin.Context) {
 		"chat": chat,
 	})
 }
-
 func GetQuestions(c *gin.Context) {
 	var questions []models.Question
 	initializers.DB.Find(&questions)
