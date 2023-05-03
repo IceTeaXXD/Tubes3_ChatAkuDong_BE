@@ -3,33 +3,34 @@ package Algo
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 );
 
-func Regex(text string) bool{
+func Regex(text string) string{
 	/* Periksa apakah terdapat format tanggal dalam teks */
 	regex := regexp.MustCompile(`([0][1-9]|[1-2][0-9]|[3][0-1])\/(0[1-9]|1[0-2])\/[0-9]{4}`);
 	return_bool, _ := regexp.MatchString(`([0][1-9]|[1-2][0-9]|[3][0-1])\/(0[1-9]|1[0-2])\/[0-9]{4}`, text);
 	if(return_bool){
 		matches := regex.FindAllString(text, -1)
-		fmt.Println(matches[0]);
+		// fmt.Println(matches[0]);
 		d := Day(matches[0]);
 		switch d{
 		case 0:
-			fmt.Println("Hari Minggu")
+			return("Hari Minggu")
 		case 1:
-			fmt.Println("Hari Senin")
+			return("Hari Senin")
 		case 2:
-			fmt.Println("Hari Selasa")
+			return("Hari Selasa")
 		case 3:
-			fmt.Println("Hari Rabu")
+			return("Hari Rabu")
 		case 4:
-			fmt.Println("Hari Kamis")
+			return("Hari Kamis")
 		case 5:
-			fmt.Println("Hari Jumat")
+			return("Hari Jumat")
 		case 6:
-			fmt.Println("Hari Sabtu")
+			return("Hari Sabtu")
 		}
-		return return_bool;
+		return "day not found";
 	}
 
 	/* Periksa apakah ekspresi matematika yang valid terkandung dalam teks*/
@@ -37,10 +38,8 @@ func Regex(text string) bool{
 	return_bool, _ = regexp.MatchString(`^\s*([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\))\s*(([-+*/]\s*([-+]?\s*\d+(\.\d+)?|\(\s*.+?\s*\)))+)\s*$`, text);
 	if(return_bool){
 		matches := regex.FindAllString(text, -1)
-		fmt.Println(matches[0]);
 		res, _ := Calculate(matches[0])
-		fmt.Println(res);
-		return return_bool;
+		return strconv.FormatFloat(res, 'f', 2, 64);
 	}
 
 	/* Periksa apakah terkandung kata Hapus Pertanyaan xxx */
@@ -49,7 +48,7 @@ func Regex(text string) bool{
 	if(return_bool){
 		matches := regex.FindStringSubmatch(text)
 		fmt.Println(matches[1])
-		return return_bool;
+		return "Sukses memasukkan ke database";
 	}
 
 	/* Periksa apakah terkandung kata Tambah Pertanyaan XXX dengan jawaban YYY */
@@ -58,8 +57,8 @@ func Regex(text string) bool{
 	if(len(matches) > 0){
 		fmt.Println(matches[1])
 		fmt.Println(matches[2])
-		return true;
+		return "Sukses memasukkan ke database"
 	}
 
-	return false;
+	return "Error";
 }
