@@ -1,9 +1,11 @@
 package controllers
 
 import (
-	"cad/algo"
+	Algo "cad/algo"
 	"cad/initializers"
 	model "cad/models"
+	models "cad/models"
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -81,6 +83,13 @@ func PostChat(c *gin.Context) {
 	c.Bind(&body)
 	// create post
 	body.Answer = Algo.Regex(body.Question)
+	var questions []models.Question
+	initializers.DB.Find(&questions)
+	fmt.Println("==========================")
+	fmt.Println(questions)
+	for _, question := range questions {
+		fmt.Println(question.Question)
+	}
 	post := model.Chat{Question: body.Question, Answer: body.Answer, IDUser: idUser, IDConversation: idConv}
 	result := initializers.DB.Create(&post)
 
