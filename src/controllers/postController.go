@@ -4,10 +4,7 @@ import (
 	Algo "cad/algo"
 	"cad/initializers"
 	model "cad/models"
-	models "cad/models"
-	// "fmt"
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -83,14 +80,13 @@ func PostChat(c *gin.Context) {
 	c.Bind(&body)
 
 	// QnA
-	var questions []models.Question
-	var newQuestion models.Question
+	var questions []model.Question
+	var newQuestion model.Question
 	var ret int
 
 	initializers.DB.Find(&questions)
 	body.Answer, ret = Algo.Regex(body.Question, questions, &newQuestion)
 
-	
 	if ret == 2 {
 		resCreate := initializers.DB.Create(&newQuestion)
 		if resCreate.Error != nil {
