@@ -70,6 +70,7 @@ func PostChat(c *gin.Context) {
 		IDChat         int
 		Question       string
 		Answer         string
+		SearchMethod   int
 	}
 	idUser, err1 := strconv.Atoi(c.Param("idUser"))
 	if err1 != nil {
@@ -113,7 +114,7 @@ func PostChat(c *gin.Context) {
 		body.Answer = "Unknown Error"
 	}
 
-	post := model.Chat{Question: body.Question, Answer: body.Answer, IDUser: idUser, IDConversation: idConv}
+	post := model.Chat{Question: body.Question, Answer: body.Answer, IDUser: idUser, IDConversation: idConv, SearchMethod: body.SearchMethod}
 	result := initializers.DB.Create(&post)
 
 	if result.Error != nil {
