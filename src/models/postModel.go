@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type User struct {
 	IDUser   int    `gorm:"primaryKey"`
 	Username string `gorm:"not null"`
@@ -7,10 +9,11 @@ type User struct {
 }
 
 type Conversation struct {
-	IDConversation int    `gorm:"primaryKey"`
-	IDUser         int    `gorm:"not null"`
-	Topic          string `gorm:"not null"`
-	Chats          []Chat `gorm:"foreignKey:IDConversation;constraint:OnDelete:CASCADE"`
+	IDConversation int       `gorm:"primaryKey"`
+	IDUser         int       `gorm:"not null"`
+	Topic          string    `gorm:"not null"`
+	Chats          []Chat    `gorm:"foreignKey:IDConversation;constraint:OnDelete:CASCADE"`
+	Date           time.Time `gorm:"not null"`
 }
 
 type Chat struct {
