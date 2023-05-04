@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func Regex(text string, questions []model.Question, newQuestion *model.Question) (string, int) {
+func Regex(text string, questions []model.Question, newQuestion *model.Question, searchMethod int) (string, int) {
 	/* retcode :
 		-1 	: regex gagal
 		1 	: regex berhasil
@@ -74,8 +74,14 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question)
 	/* Periksa dengan KMP atau BM */
 	for _, question := range questions {
 		// make text and question to lowercase
-		if KMP(strings.ToLower(text), strings.ToLower(question.Question)) != -1 {
-			return question.Answer, 1
+		if(searchMethod == 1){
+			if KMP(strings.ToLower(text), strings.ToLower(question.Question)) != -1 {
+				return "KMP : " + question.Answer, 1
+			}
+		} else {
+			if BMMatch(strings.ToLower(text), strings.ToLower(question.Question)) != -1 {
+				return "BM : " + question.Answer, 1
+			}
 		}
 	}
 

@@ -90,7 +90,7 @@ func PostChat(c *gin.Context) {
 	var ret int
 
 	initializers.DB.Find(&questions)
-	body.Answer, ret = Algo.Regex(body.Question, questions, &newQuestion)
+	body.Answer, ret = Algo.Regex(body.Question, questions, &newQuestion, body.SearchMethod)
 
 	if ret == 2 {
 		resCreate := initializers.DB.Create(&newQuestion)
