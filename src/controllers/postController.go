@@ -113,7 +113,7 @@ func PostChat(c *gin.Context) {
 			body.Answer = "Gagal menghapus pertanyaan"
 		}
 		body.Answer = "Sukses menghapus pertanyaan"
-	} else {
+	} else if ret == -1{
 		body.Answer = "Unknown Error"
 	}
 
