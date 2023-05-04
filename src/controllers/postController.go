@@ -4,10 +4,8 @@ import (
 	Algo "cad/algo"
 	"cad/initializers"
 	model "cad/models"
-	"fmt"
-	"strconv"
-
 	// "fmt"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +42,6 @@ func PostConversation(c *gin.Context) {
 		Date           time.Time
 	}
 	Date := time.Now();
-	// idUser := c.Param("idUser")
 	idUser, err := strconv.Atoi(c.Param("idUser"))
 	if err != nil {
 		// handle the error
@@ -92,7 +89,6 @@ func PostChat(c *gin.Context) {
 	var ret int
 
 	initializers.DB.Find(&questions)
-	fmt.Println(questions)
 	body.Answer, ret = Algo.Regex(body.Question, questions, &newQuestion)
 
 	if ret == 2 {
@@ -113,7 +109,7 @@ func PostChat(c *gin.Context) {
 			body.Answer = "Gagal menghapus pertanyaan"
 		}
 		body.Answer = "Sukses menghapus pertanyaan"
-	} else if ret == -1{
+	} else if ret == -1 {
 		body.Answer = "Unknown Error"
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"sort"
 )
 
 func Regex(text string, questions []model.Question, newQuestion *model.Question) (string, int) {
@@ -62,8 +63,8 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question)
 	regex = regexp.MustCompile(`(?i)^tambah pertanyaan\s+(.*?)\s+dengan jawaban\s+(.*?)$`)
 	matches := regex.FindStringSubmatch(text)
 	if len(matches) > 0 {
-		fmt.Println(matches[1])
-		fmt.Println(matches[2])
+		// fmt.Println(matches[1])
+		// fmt.Println(matches[2])
 		newQuestion.Question = matches[1]
 		newQuestion.Answer = matches[2]
 		return "", 2
@@ -71,10 +72,44 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question)
 
 	/* Periksa dengan KMP atau BM */
 	for _, question := range questions {
-		if BMMatch(text, question.Question) != -1 {
+		if KMP(text, question.Question) != -1 {
+			fmt.Println("lmao")
 			return question.Answer, 1
 		}
 	}
 
+	/* Jika tidak ada yang exact match, coba levenstein */
+	ans := ""
+	num := 1
+	
+	/* sort questions berdasarkan match ratio-nya */
+	sortedQuestions := sortByMatchRatio(questions, text)
+	
+	/* masukkan top 3 questions yang memiliki match ratio < 0.9 */
+	for i, question := range sortedQuestions {
+		if i >= 3 || MatchRatio(text, question.Question) >= 0.9 {
+			break
+		}
+		ans += strconv.Itoa(num) + ". " + question.Question + " (" + strconv.FormatFloat(MatchRatio(text, question.Question)*100, 'f', 1, 64) + "%)\n"
+		num++
+	}
+	
+	/* jika ada yang match ratio-nya >= 0.9, return jawaban pertama */
+	if num == 1 {
+		return sortedQuestions[0].Answer, 1 
+	}
+	
+	/* jika tidak, return pertanyaan yang memiliki match ratio tertinggi */
+	if ans != "" {
+		return "Mungkin pertanyaan yang anda maksud adalah :\n" + ans, 1
+	}
+
 	return "Error", -1
+}
+
+func sortByMatchRatio(questions []model.Question, text string) []model.Question {
+	sort.Slice(questions, func(i, j int) bool {
+		return MatchRatio(text, questions[i].Question) > MatchRatio(text, questions[j].Question)
+	})
+	return questions
 }
