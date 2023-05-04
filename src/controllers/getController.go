@@ -29,9 +29,10 @@ func GetConversationFromUser(c *gin.Context) {
 
 func GetChatFromConversation(c *gin.Context) {
 	id := c.Param("idConv")
-
+	idUsr := c.Param("idUser")
 	var chat []models.Chat
-	initializers.DB.Where("id_conversation = ?", id).Find(&chat)
+	//find conversation with id_conversation = id and id_user = idUser
+	initializers.DB.Where("id_conversation = ? AND id_user = ?", id, idUsr).Find(&chat)
 
 	c.JSON(200, gin.H{
 		"chat": chat,
