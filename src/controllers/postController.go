@@ -5,8 +5,10 @@ import (
 	"cad/initializers"
 	model "cad/models"
 	models "cad/models"
+
 	// "fmt"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,7 +41,9 @@ func PostConversation(c *gin.Context) {
 	var body struct {
 		IDConversation int
 		Topic          string
+		Date           time.Time
 	}
+	Date := time.Now();
 	// idUser := c.Param("idUser")
 	idUser, err := strconv.Atoi(c.Param("idUser"))
 	if err != nil {
@@ -49,7 +53,7 @@ func PostConversation(c *gin.Context) {
 	}
 	c.Bind(&body)
 	text := body.Topic
-	post := model.Conversation{IDConversation: body.IDConversation, Topic: text, IDUser: idUser}
+	post := model.Conversation{IDConversation: body.IDConversation, Topic: text, IDUser: idUser, Date: Date}
 	result := initializers.DB.Create(&post)
 
 	if result.Error != nil {
@@ -90,7 +94,6 @@ func PostChat(c *gin.Context) {
 	initializers.DB.Find(&questions)
 	body.Answer, ret = Algo.Regex(body.Question, questions, &newQuestion)
 
-	
 	if ret == 2 {
 		resCreate := initializers.DB.Create(&newQuestion)
 		if resCreate.Error != nil {
@@ -99,7 +102,7 @@ func PostChat(c *gin.Context) {
 			body.Answer = "Gagal menambahkan pertanyaan"
 		}
 		body.Answer = "Sukses menambahkan pertanyaan"
-	} else if ret == 3{
+	} else if ret == 3 {
 		// find the id of the question
 		initializers.DB.Where("question = ?", newQuestion.Question).Find(&newQuestion)
 		resDelete := initializers.DB.Delete(&newQuestion)
