@@ -76,11 +76,11 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question,
 		// make text and question to lowercase
 		if(searchMethod == 1){
 			if KMP(strings.ToLower(text), strings.ToLower(question.Question)) != -1 {
-				return "KMP : " + question.Answer, 1
+				return question.Answer, 1
 			}
 		} else {
 			if BMMatch(strings.ToLower(text), strings.ToLower(question.Question)) != -1 {
-				return "BM : " + question.Answer, 1
+				return question.Answer, 1
 			}
 		}
 	}
@@ -112,10 +112,6 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question,
 	}
 
 	return "Error", -1
-}
-
-func ToLower(s string) {
-	panic("unimplemented")
 }
 
 func sortByMatchRatio(questions []model.Question, text string) []model.Question {

@@ -92,21 +92,30 @@ func PostChat(c *gin.Context) {
 	initializers.DB.Find(&questions)
 	body.Answer, ret = Algo.Regex(body.Question, questions, &newQuestion, body.SearchMethod)
 
-	if ret == 2 {
-		resCreate := initializers.DB.Create(&newQuestion)
-		if resCreate.Error != nil {
-			// c.Status(400)
-			// return
-			body.Answer = "Gagal menambahkan pertanyaan"
+	if ret == 2 { // add new question
+		// check if the question already exists, if it does, update the question answer to the new answer
+		temp := model.Question{}
+		initializers.DB.Where("question = ?", newQuestion.Question).Find(&temp)
+		if temp.Question != "" {
+			temp.Answer = newQuestion.Answer
+			resUpdate := initializers.DB.Save(&temp)
+			if resUpdate.Error != nil {
+				body.Answer = "Gagal mengupdate pertanyaan"
+			}
+			body.Answer = "Sukses mengupdate pertanyaan"
+		} else{
+			// if it doesn't, create a new question
+			resCreate := initializers.DB.Create(&newQuestion)
+			if resCreate.Error != nil {
+				body.Answer = "Gagal menambahkan pertanyaan"
+			}
+			body.Answer = "Sukses menambahkan pertanyaan"
 		}
-		body.Answer = "Sukses menambahkan pertanyaan"
-	} else if ret == 3 {
+	} else if ret == 3 { // hapus question
 		// find the id of the question
 		initializers.DB.Where("question = ?", newQuestion.Question).Find(&newQuestion)
 		resDelete := initializers.DB.Delete(&newQuestion)
 		if resDelete.Error != nil {
-			// c.Status(400)
-			// return
 			body.Answer = "Gagal menghapus pertanyaan"
 		}
 		body.Answer = "Sukses menghapus pertanyaan"
@@ -121,7 +130,7 @@ func PostChat(c *gin.Context) {
 		c.Status(400)
 		return
 	}
-	// return post
+	
 	c.JSON(200, gin.H{
 		"post": post,
 	})
