@@ -22,6 +22,7 @@ type Chat struct {
 	IDUser         int    `gorm:"not null"`
 	Question       string `gorm:"not null"`
 	Answer         string `gorm:"not null"`
+	SearchMethod   int    `gorm:"not null"`
 }
 
 type Question struct {
