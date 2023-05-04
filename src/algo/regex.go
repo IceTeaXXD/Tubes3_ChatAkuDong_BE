@@ -2,10 +2,11 @@ package Algo
 
 import (
 	model "cad/models"
-	"fmt"
+	// "fmt"
 	"regexp"
 	"strconv"
 	"sort"
+	"strings"
 )
 
 func Regex(text string, questions []model.Question, newQuestion *model.Question) (string, int) {
@@ -72,8 +73,8 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question)
 
 	/* Periksa dengan KMP atau BM */
 	for _, question := range questions {
-		if KMP(text, question.Question) != -1 {
-			fmt.Println("lmao")
+		// make text and question to lowercase
+		if KMP(strings.ToLower(text), strings.ToLower(question.Question)) != -1 {
 			return question.Answer, 1
 		}
 	}
@@ -87,10 +88,10 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question)
 	
 	/* masukkan top 3 questions yang memiliki match ratio < 0.9 */
 	for i, question := range sortedQuestions {
-		if i >= 3 || MatchRatio(text, question.Question) >= 0.9 {
+		if i >= 3 || MatchRatio(strings.ToLower(text), strings.ToLower(question.Question)) >= 0.9 {
 			break
 		}
-		ans += strconv.Itoa(num) + ". " + question.Question + " (" + strconv.FormatFloat(MatchRatio(text, question.Question)*100, 'f', 1, 64) + "%)\n"
+		ans += strconv.Itoa(num) + ". " + question.Question + " (" + strconv.FormatFloat(MatchRatio(strings.ToLower(text), strings.ToLower(question.Question))*100, 'f', 1, 64) + "%)\n"
 		num++
 	}
 	
@@ -107,9 +108,13 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question)
 	return "Error", -1
 }
 
+func ToLower(s string) {
+	panic("unimplemented")
+}
+
 func sortByMatchRatio(questions []model.Question, text string) []model.Question {
 	sort.Slice(questions, func(i, j int) bool {
-		return MatchRatio(text, questions[i].Question) > MatchRatio(text, questions[j].Question)
+		return MatchRatio(strings.ToLower(text), strings.ToLower(questions[i].Question)) > MatchRatio(strings.ToLower(text), strings.ToLower(questions[j].Question))
 	})
 	return questions
 }
