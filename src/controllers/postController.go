@@ -5,7 +5,7 @@ import (
 	"cad/initializers"
 	model "cad/models"
 	models "cad/models"
-	"fmt"
+	// "fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -81,15 +81,38 @@ func PostChat(c *gin.Context) {
 		return
 	}
 	c.Bind(&body)
-	// create post
-	body.Answer = Algo.Regex(body.Question)
+
+	// QnA
 	var questions []models.Question
+	var newQuestion models.Question
+	var ret int
+
 	initializers.DB.Find(&questions)
-	fmt.Println("==========================")
-	fmt.Println(questions)
-	for _, question := range questions {
-		fmt.Println(question.Question)
+	body.Answer, ret = Algo.Regex(body.Question, questions, &newQuestion)
+
+	
+	if ret == 2 {
+		resCreate := initializers.DB.Create(&newQuestion)
+		if resCreate.Error != nil {
+			// c.Status(400)
+			// return
+			body.Answer = "Gagal menambahkan pertanyaan"
+		}
+		body.Answer = "Sukses menambahkan pertanyaan"
+	} else if ret == 3{
+		// find the id of the question
+		initializers.DB.Where("question = ?", newQuestion.Question).Find(&newQuestion)
+		resDelete := initializers.DB.Delete(&newQuestion)
+		if resDelete.Error != nil {
+			// c.Status(400)
+			// return
+			body.Answer = "Gagal menghapus pertanyaan"
+		}
+		body.Answer = "Sukses menghapus pertanyaan"
+	} else {
+		body.Answer = "Unknown Error"
 	}
+
 	post := model.Chat{Question: body.Question, Answer: body.Answer, IDUser: idUser, IDConversation: idConv}
 	result := initializers.DB.Create(&post)
 
@@ -102,6 +125,7 @@ func PostChat(c *gin.Context) {
 		"post": post,
 	})
 }
+
 func PostQuestion(c *gin.Context) {
 	// get data
 	var body struct {
