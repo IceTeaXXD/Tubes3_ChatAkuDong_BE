@@ -17,7 +17,7 @@ func main() {
 
 	// Add CORS middleware
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://chatakudong.vercel.app"},
+		AllowOrigins: []string{"https://chatakudong.vercel.app","http://localhost:3000"},
 		AllowMethods: []string{"GET", "POST", "DELETE"},
 		AllowHeaders: []string{"Origin", "Content-Type"},
 	}))
