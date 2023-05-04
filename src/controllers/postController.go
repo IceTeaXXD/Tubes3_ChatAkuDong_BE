@@ -4,9 +4,12 @@ import (
 	Algo "cad/algo"
 	"cad/initializers"
 	model "cad/models"
+	"fmt"
 	"strconv"
+
 	// "fmt"
 	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -89,6 +92,7 @@ func PostChat(c *gin.Context) {
 	var ret int
 
 	initializers.DB.Find(&questions)
+	fmt.Println(questions)
 	body.Answer, ret = Algo.Regex(body.Question, questions, &newQuestion)
 
 	if ret == 2 {
