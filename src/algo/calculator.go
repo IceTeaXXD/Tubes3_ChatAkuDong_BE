@@ -1,7 +1,7 @@
 package Algo
 
 import (
-    // "strconv"
+    "strconv"
 	"strings"
     "unicode"
     "math"
@@ -85,17 +85,17 @@ func Calculate(expression string) (float64, error) {
 			}
 			opStack = append(opStack, rune(token)) // Memasukkan operator token ke stack operator
 
-		} else if unicode.IsDigit(rune(token)) { // Jika token merupakan angka akan di push ke stack angka
-			num := int(token - '0') // Konversi dari rune ke int
-			
-			// Loop untuk menghandle angka dengan lebih dari 1 digit
-			for len(expression) > 0 && unicode.IsDigit(rune(expression[0])) {  
-				num = num*10 + int(expression[0]-'0')
-				expression = expression[1:]
-			}
-
-			// Push angka ke stack angka
-			numStack = append(numStack, float64(num))
+		} else if unicode.IsDigit(rune(token)) || token == '.' { // Jika token merupakan angka akan di push ke stack angka
+			numStr := string(token)
+            for len(expression) > 0 && (unicode.IsDigit(rune(expression[0])) || expression[0] == '.') {
+                numStr += string(expression[0])
+                expression = expression[1:]
+            }
+            num, err := strconv.ParseFloat(numStr, 64)
+            if err != nil {
+                return 0, err
+            }
+            numStack = append(numStack, num)
 		}
 	}
 	
