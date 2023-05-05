@@ -5,9 +5,11 @@ import (
 	"cad/initializers"
 	model "cad/models"
 	// "fmt"
+	"regexp"
 	"strconv"
-	"time"
 	"strings"
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -83,50 +85,99 @@ func PostChat(c *gin.Context) {
 		return
 	}
 	c.Bind(&body)
-
+	
 	// QnA
 	var questions []model.Question
 	var newQuestion model.Question
-	var ret int
-
+	
 	initializers.DB.Find(&questions)
-	body.Answer, ret = Algo.Regex(body.Question, questions, &newQuestion, body.SearchMethod)
 
-	if ret == 2 { // add new question
-		// check if the question already exists, if it does, update the question answer to the new answer
-		temp := model.Question{}
-		initializers.DB.Where("question = ?", newQuestion.Question).Find(&temp)
-		if temp.Question != "" {
-			temp.Answer = newQuestion.Answer
-			resUpdate := initializers.DB.Save(&temp)
-			body.Answer = "Sukses mengupdate pertanyaan"
-			if resUpdate.Error != nil {
-				body.Answer = "Gagal mengupdate pertanyaan"
+	/* Cek apakah terdapat pemisah ";" */
+	regex := regexp.MustCompile(`\b[^;]+\b`)
+	return_bool, _ := regexp.MatchString(`;`, body.Question);
+	if(return_bool){
+		matches := regex.FindAllString(body.Question, -1)
+		l := 0
+		for l < len(matches){
+			/* Pass in to Regex Again */
+			ans, ret := Algo.Regex(matches[l], questions, &newQuestion, body.SearchMethod)
+			
+			if ret == 2 { // add new question
+				// check if the question already exists, if it does, update the question answer to the new answer
+				temp := model.Question{}
+				initializers.DB.Where("question = ?", newQuestion.Question).Find(&temp)
+				if temp.Question != "" {
+					temp.Answer = newQuestion.Answer
+					resUpdate := initializers.DB.Save(&temp)
+					ans = "Sukses mengupdate pertanyaan"
+					if resUpdate.Error != nil {
+						ans = "Gagal mengupdate pertanyaan"
+					}
+					} else{
+						// if it doesn't, create a new question
+						resCreate := initializers.DB.Create(&newQuestion)
+						ans = "Sukses menambahkan pertanyaan"
+						if resCreate.Error != nil {
+							ans = "Gagal menambahkan pertanyaan"
+						}
+					}
+			} else if ret == 3 { // hapus question
+				// find the id of the question
+				initializers.DB.Where("question = ?", newQuestion.Question).Find(&newQuestion)
+				resDelete := initializers.DB.Delete(&newQuestion)
+				ans = "Sukses menghapus pertanyaan"
+				if resDelete.Error != nil {
+					ans = "Gagal menghapus pertanyaan"
+				}
+				} else if ret == -1 {
+					ans = "Unknown Error"
+				}
+			body.Answer += strconv.Itoa(l+1) + ". Q: " + matches[l] + "\nA: " + ans
+			if l != len(matches)-1 {
+				body.Answer += "\n\n"
 			}
-		} else{
-			// if it doesn't, create a new question
-			resCreate := initializers.DB.Create(&newQuestion)
-			body.Answer = "Sukses menambahkan pertanyaan"
-			if resCreate.Error != nil {
-				body.Answer = "Gagal menambahkan pertanyaan"
+			l++
+		}
+	} else {
+		ans, ret := Algo.Regex(body.Question, questions, &newQuestion, body.SearchMethod)
+
+		if ret == 2 { // add new question
+			// check if the question already exists, if it does, update the question answer to the new answer
+			temp := model.Question{}
+			initializers.DB.Where("question = ?", newQuestion.Question).Find(&temp)
+			if temp.Question != "" {
+				temp.Answer = newQuestion.Answer
+				resUpdate := initializers.DB.Save(&temp)
+				ans = "Sukses mengupdate pertanyaan"
+				if resUpdate.Error != nil {
+					ans = "Gagal mengupdate pertanyaan"
+				}
+			} else{
+				// if it doesn't, create a new question
+				resCreate := initializers.DB.Create(&newQuestion)
+				ans = "Sukses menambahkan pertanyaan"
+				if resCreate.Error != nil {
+					ans = "Gagal menambahkan pertanyaan"
+				}
 			}
+		} else if ret == 3 { // hapus question
+			// find the id of the question
+			initializers.DB.Where("question = ?", newQuestion.Question).Find(&newQuestion)
+			resDelete := initializers.DB.Delete(&newQuestion)
+			ans = "Sukses menghapus pertanyaan"
+			if resDelete.Error != nil {
+				ans = "Gagal menghapus pertanyaan"
+			}
+		} else if ret == -1 {
+			ans = "Unknown Error"
 		}
-	} else if ret == 3 { // hapus question
-		// find the id of the question
-		initializers.DB.Where("question = ?", newQuestion.Question).Find(&newQuestion)
-		resDelete := initializers.DB.Delete(&newQuestion)
-		body.Answer = "Sukses menghapus pertanyaan"
-		if resDelete.Error != nil {
-			body.Answer = "Gagal menghapus pertanyaan"
-		}
-	} else if ret == -1 {
-		body.Answer = "Unknown Error"
+		
+		body.Answer = ans
 	}
-
+	
+	// update current conversation topic to the first 3 words of the last question
 	post := model.Chat{Question: body.Question, Answer: body.Answer, IDUser: idUser, IDConversation: idConv, SearchMethod: body.SearchMethod}
 	result := initializers.DB.Create(&post)
-
-	// update current conversation topic to the first 3 words of the last question
 	conv := model.Conversation{}
 	initializers.DB.Where("id_conversation = ?", idConv).Find(&conv)
 	words := strings.Fields(body.Question)
