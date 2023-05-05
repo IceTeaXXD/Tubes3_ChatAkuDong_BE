@@ -43,8 +43,8 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question,
 	}
 
 	/* Periksa apakah ekspresi matematika yang valid terkandung dalam teks*/
-	regex = regexp.MustCompile(`\s+([\-\+\*\^\/\(\)\s?0-9.?]+)`)
-	return_bool, _ = regexp.MatchString(`\s+([\-\+\*\^\/\(\)\s?0-9.?]+)`, text)
+	regex = regexp.MustCompile(`(?:\s|^)([\-\+\*\^\/\(\)\s?0-9.?]+)`)
+	return_bool, _ = regexp.MatchString(`(?:\s|^)([\-\+\*\^\/\(\)\s?0-9.?]+)`, text)
 	if return_bool {
 		matches := regex.FindAllString(text, -1)
 		res, _ := Calculate(matches[0])
