@@ -130,7 +130,7 @@ func PostChat(c *gin.Context) {
 					ans = "Gagal menghapus pertanyaan"
 				}
 				} else if ret == -1 {
-					ans = "Unknown Error"
+					ans = "Pertanyaan tidak ditemukan."
 				}
 			body.Answer += strconv.Itoa(l+1) + ". Q: " + matches[l] + "\nA: " + ans
 			if l != len(matches)-1 {
@@ -169,7 +169,7 @@ func PostChat(c *gin.Context) {
 				ans = "Gagal menghapus pertanyaan"
 			}
 		} else if ret == -1 {
-			ans = "Unknown Error"
+			ans = "Pertanyaan tidak ditemukan."
 		}
 		
 		body.Answer = ans

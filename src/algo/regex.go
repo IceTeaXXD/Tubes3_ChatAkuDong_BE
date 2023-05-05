@@ -4,17 +4,17 @@ import (
 	model "cad/models"
 	// "fmt"
 	"regexp"
-	"strconv"
 	"sort"
+	"strconv"
 	"strings"
 )
 
 func Regex(text string, questions []model.Question, newQuestion *model.Question, searchMethod int) (string, int) {
 	/* retcode :
-		-1 	: regex gagal
-		1 	: regex berhasil
-		2 	: tambah pertanyaan
-		3	: hapus pertanyaan
+	-1 	: regex gagal
+	1 	: regex berhasil
+	2 	: tambah pertanyaan
+	3	: hapus pertanyaan
 	*/
 
 	/* Periksa apakah terdapat format tanggal dalam teks */
@@ -25,7 +25,7 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question,
 		d := Day(matches[0])
 		switch d {
 		case 0:
-			return ("Hari Minggu"), 1 
+			return ("Hari Minggu"), 1
 		case 1:
 			return ("Hari Senin"), 1
 		case 2:
@@ -74,13 +74,17 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question,
 	/* Periksa dengan KMP atau BM */
 	for _, question := range questions {
 		// make text and question to lowercase
-		if(searchMethod == 1){
+		if searchMethod == 1 {
 			if KMP(strings.ToLower(text), strings.ToLower(question.Question)) != -1 {
-				return question.Answer, 1
+				return parseEndLine(string(question.Answer)), 1
+			} else if KMP(strings.ToLower(question.Question), strings.ToLower(text)) != -1 {
+				return parseEndLine(string(question.Answer)), 1
 			}
 		} else {
 			if BMMatch(strings.ToLower(text), strings.ToLower(question.Question)) != -1 {
-				return question.Answer, 1
+				return parseEndLine(question.Answer), 1
+			}else if BMMatch(strings.ToLower(question.Question), strings.ToLower(text)) != -1 {
+				return parseEndLine(question.Answer), 1
 			}
 		}
 	}
@@ -88,10 +92,10 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question,
 	/* Jika tidak ada yang exact match, coba levenstein */
 	ans := ""
 	num := 1
-	
+
 	/* sort questions berdasarkan match ratio-nya */
 	sortedQuestions := sortByMatchRatio(questions, text)
-	
+
 	/* masukkan top 3 questions yang memiliki match ratio < 0.9 */
 	for i, question := range sortedQuestions {
 		if i >= 3 || MatchRatio(strings.ToLower(text), strings.ToLower(question.Question)) >= 0.9 {
@@ -100,12 +104,12 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question,
 		ans += strconv.Itoa(num) + ". " + question.Question + " (" + strconv.FormatFloat(MatchRatio(strings.ToLower(text), strings.ToLower(question.Question))*100, 'f', 1, 64) + "%)\n"
 		num++
 	}
-	
+
 	/* jika ada yang match ratio-nya >= 0.9, return jawaban pertama */
 	if num == 1 {
-		return sortedQuestions[0].Answer, 1 
+		return sortedQuestions[0].Answer, 1
 	}
-	
+
 	/* jika tidak, return pertanyaan yang memiliki match ratio tertinggi */
 	if ans != "" {
 		return "Mungkin pertanyaan yang anda maksud adalah :\n" + ans, 1
@@ -119,4 +123,19 @@ func sortByMatchRatio(questions []model.Question, text string) []model.Question 
 		return MatchRatio(strings.ToLower(text), strings.ToLower(questions[i].Question)) > MatchRatio(strings.ToLower(text), strings.ToLower(questions[j].Question))
 	})
 	return questions
+}
+
+func parseEndLine(text string) string {
+    ans := ""
+    for i := 0; i < len(text)-1; i++ {
+        if string(text[i]) == "\\" &&string(text[i+1]) == "n"{
+            ans += "\n"
+			i++
+			// advance the loop counter an extra step to skip over the second character of the escape sequence
+        } else {
+            ans += string(text[i])
+        }
+    }
+	ans += string(text[len(text)-1])
+    return ans
 }
