@@ -7,7 +7,7 @@ import (
 	// "fmt"
 	"strconv"
 	"time"
-
+	"strings"
 	"github.com/gin-gonic/gin"
 )
 
@@ -99,32 +99,43 @@ func PostChat(c *gin.Context) {
 		if temp.Question != "" {
 			temp.Answer = newQuestion.Answer
 			resUpdate := initializers.DB.Save(&temp)
+			body.Answer = "Sukses mengupdate pertanyaan"
 			if resUpdate.Error != nil {
 				body.Answer = "Gagal mengupdate pertanyaan"
 			}
-			body.Answer = "Sukses mengupdate pertanyaan"
 		} else{
 			// if it doesn't, create a new question
 			resCreate := initializers.DB.Create(&newQuestion)
+			body.Answer = "Sukses menambahkan pertanyaan"
 			if resCreate.Error != nil {
 				body.Answer = "Gagal menambahkan pertanyaan"
 			}
-			body.Answer = "Sukses menambahkan pertanyaan"
 		}
 	} else if ret == 3 { // hapus question
 		// find the id of the question
 		initializers.DB.Where("question = ?", newQuestion.Question).Find(&newQuestion)
 		resDelete := initializers.DB.Delete(&newQuestion)
+		body.Answer = "Sukses menghapus pertanyaan"
 		if resDelete.Error != nil {
 			body.Answer = "Gagal menghapus pertanyaan"
 		}
-		body.Answer = "Sukses menghapus pertanyaan"
 	} else if ret == -1 {
 		body.Answer = "Unknown Error"
 	}
 
 	post := model.Chat{Question: body.Question, Answer: body.Answer, IDUser: idUser, IDConversation: idConv, SearchMethod: body.SearchMethod}
 	result := initializers.DB.Create(&post)
+
+	// update current conversation topic to the first 3 words of the last question
+	conv := model.Conversation{}
+	initializers.DB.Where("id_conversation = ?", idConv).Find(&conv)
+	words := strings.Fields(body.Question)
+	if len(words) > 2 {
+		conv.Topic = strings.Join(words[:3], " ")
+	} else {
+		conv.Topic = body.Question
+	}
+	initializers.DB.Save(&conv)
 
 	if result.Error != nil {
 		c.Status(400)
