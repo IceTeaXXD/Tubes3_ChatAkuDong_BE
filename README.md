@@ -34,7 +34,7 @@ List the ready features here:
 1. To run locally, you need to install GoLang first. You can download it [here](https://golang.org/dl/).
 2. Clone this repository.
 ```
-git clone github.com/IceTeaXXD/Tubes3_ChatAkuDong_BE.git
+git clone https://github.com/IceTeaXXD/Tubes3_ChatAkuDong_BE.git
 ```
 3. Run the program
 ```
