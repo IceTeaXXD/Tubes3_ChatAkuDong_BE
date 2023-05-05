@@ -17,9 +17,23 @@ func Regex(text string, questions []model.Question, newQuestion *model.Question,
 		3	: hapus pertanyaan
 	*/
 
+	/* Cek apakah terdapat pemisah ";" */
+	regex := regexp.MustCompile(`[^;]+`)
+	return_bool, _ := regexp.MatchString(`;`, text);
+	if(return_bool){
+		matches := regex.FindAllString(text, -1)
+		l := 0
+		for l < len(matches){
+			/* Pass in to Regex Again */
+			fmt.Println(Regex(matches[l], questions, &newQuestion, searchMethod))
+			l++
+		}
+		return "", 1
+	}
+
 	/* Periksa apakah terdapat format tanggal dalam teks */
-	regex := regexp.MustCompile(`([0][1-9]|[1-2][0-9]|[3][0-1])\/(0[1-9]|1[0-2])\/[0-9]{4}`)
-	return_bool, _ := regexp.MatchString(`([0][1-9]|[1-2][0-9]|[3][0-1])\/(0[1-9]|1[0-2])\/[0-9]{4}`, text)
+	regex = regexp.MustCompile(`([0][1-9]|[1-2][0-9]|[3][0-1])\/(0[1-9]|1[0-2])\/[0-9]{4}`)
+	return_bool, _ = regexp.MatchString(`([0][1-9]|[1-2][0-9]|[3][0-1])\/(0[1-9]|1[0-2])\/[0-9]{4}`, text)
 	if return_bool {
 		matches := regex.FindAllString(text, -1)
 		d := Day(matches[0])
