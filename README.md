@@ -56,4 +56,4 @@ CompileDaemon -command="./cad"
 - Tuhan Yang Maha Esa
 - Dosen Pengampu Mata Kuliah IF2211 Strategi Algoritma
 - Asisten Pengampu Mata Kuliah IF2211 Strategi Algoritma
-- Our loved ones who support us to finish this project 💖
+- Our loved ones who support us to finish this project 💖 
