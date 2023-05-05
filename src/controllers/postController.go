@@ -91,7 +91,7 @@ func PostChat(c *gin.Context) {
 	var newQuestion model.Question
 	
 	initializers.DB.Find(&questions)
-
+	
 	/* Cek apakah terdapat pemisah ";" */
 	regex := regexp.MustCompile(`\b[^;]+\b`)
 	return_bool, _ := regexp.MatchString(`;`, body.Question);
@@ -99,6 +99,7 @@ func PostChat(c *gin.Context) {
 		matches := regex.FindAllString(body.Question, -1)
 		l := 0
 		for l < len(matches){
+			var newQuestion model.Question
 			/* Pass in to Regex Again */
 			ans, ret := Algo.Regex(matches[l], questions, &newQuestion, body.SearchMethod)
 			
@@ -128,6 +129,8 @@ func PostChat(c *gin.Context) {
 				ans = "Sukses menghapus pertanyaan"
 				if resDelete.Error != nil {
 					ans = "Gagal menghapus pertanyaan"
+					temp,_ := Algo.Regex(newQuestion.Question, questions, &newQuestion, body.SearchMethod)
+					ans += "\n" + temp
 				}
 				} else if ret == -1 {
 					ans = "Pertanyaan tidak ditemukan."
@@ -167,6 +170,8 @@ func PostChat(c *gin.Context) {
 			ans = "Sukses menghapus pertanyaan"
 			if resDelete.Error != nil {
 				ans = "Gagal menghapus pertanyaan"
+				temp,_ := Algo.Regex(newQuestion.Question, questions, &newQuestion, body.SearchMethod)
+				ans += "\n" + temp
 			}
 		} else if ret == -1 {
 			ans = "Pertanyaan tidak ditemukan."
